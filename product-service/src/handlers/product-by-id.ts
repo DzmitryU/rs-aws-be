@@ -2,7 +2,7 @@ import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 
 import {getById} from '../dataStore'
-import {toSuccess} from "../utils/response";
+import {toNotFound, toSuccess} from "../utils/response";
 
 export const getProductsById: APIGatewayProxyHandler = async (event) => {
   const { productId } = event.pathParameters;
@@ -11,5 +11,5 @@ export const getProductsById: APIGatewayProxyHandler = async (event) => {
   const product = await getById(productId);
   console.log(`product-by-id - product: ${JSON.stringify(product)}`);
 
-  return toSuccess(product);
+  return product ? toSuccess(product) : toNotFound();
 }
