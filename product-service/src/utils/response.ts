@@ -20,3 +20,7 @@ export const toSuccess = (data) => addHeaderCORS({
 export const toNotFound = () => addHeaderCORS({
     statusCode: StatusCodes.NOT_FOUND,
 });
+
+export const toServerError = () => addHeaderCORS({
+    statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
+});
