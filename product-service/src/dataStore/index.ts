@@ -1,9 +1,9 @@
-import {products} from './db';
+import {get, getAll as getAllProducts} from './pg-client';
 
 export const getAll = async () => {
-    return products;
+    return getAllProducts();
 }
 
 export const getById = async (id) => {
-    return products.find((product) => product.id === id);
+    return get(id);
 }
