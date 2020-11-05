@@ -39,10 +39,8 @@ export const get = async (id): Promise<Product> => {
     await client.connect();
 
     try {
-        const script = `select * from products, stocks where id = '${id}' and id = product_id`;
-        console.log(script);
         const { rows: products } =
-            await client.query(script);
+            await client.query(`select * from products, stocks where id = '${id}' and id = product_id`);
 
         return products[0];
     } catch (error) {
