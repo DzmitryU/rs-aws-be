@@ -5,6 +5,7 @@ import {getAll} from '../dataStore'
 import {toServerError, toSuccess} from "../utils/response";
 
 export const getProductsList: APIGatewayProxyHandler = async () => {
+  console.log('Querying for all products');
   try {
     const products = await getAll();
 
