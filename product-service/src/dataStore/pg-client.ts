@@ -1,7 +1,9 @@
 'use strict';
-import {Product} from "../types/Product";
+import { v4 as uuidv4 } from 'uuid';
+import { Client } from 'pg';
 
-const { Client } = require('pg');
+import {Product} from '../types/Product';
+
 
 const { PG_HOST, PG_PORT, PG_DATABASE, PG_USERNAME, PG_PASSWORD } = process.env;
 
@@ -23,11 +25,13 @@ export const getAll = async (): Promise<Product[]> => {
     await client.connect();
 
     try {
-        const { rows: products } = await client.query(`select * from products, stocks where id = product_id`);
+        const script = `select * from products, stocks where id = product_id`;
+        console.log(`Script for getAll: ${script}`);
+        const { rows: products } = await client.query(script);
 
         return products;
     } catch (error) {
-        console.error('Error during database request executing:', error);
+        console.error('Error during database getAll request executing:', error);
         return [];
     } finally {
         client.end();
@@ -39,12 +43,40 @@ export const get = async (id): Promise<Product> => {
     await client.connect();
 
     try {
+        const script = `select * from products, stocks where id = '${id}' and id = product_id`;
+        console.log(`Script for get: ${script}`);
         const { rows: products } =
-            await client.query(`select * from products, stocks where id = '${id}' and id = product_id`);
+            await client.query(script);
 
         return products[0];
     } catch (error) {
-        console.error('Error during database request executing:', error);
+        console.error('Error during database get request executing:', error);
+        return null;
+    } finally {
+        client.end();
+    }
+}
+
+export const insert = async (product: Product): Promise<Product> => {
+    const client = new Client(dbOptions);
+    await client.connect();
+
+    try {
+        const id = uuidv4();
+        const productsScript =
+            `insert into products (id, description, price, title) ` +
+            `values ('${id}','${product.description}',${product.price},'${product.title}')`;
+        console.log(`Script for insert products: ${productsScript}`)
+        await client.query(productsScript);
+        product.id = id;
+
+        const stocksScript = `insert into stocks (product_id, count) values ('${id}',${product.count})`;
+        console.log(`Script for insert stocks: ${stocksScript}`);
+        await client.query(stocksScript);
+
+        return product;
+    } catch (error) {
+        console.error('Error during database insert request executing:', error);
         return null;
     } finally {
         client.end();
