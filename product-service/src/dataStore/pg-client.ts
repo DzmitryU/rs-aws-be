@@ -60,6 +60,7 @@ export const get = async (id): Promise<Product> => {
 export const insert = async (product: Product): Promise<Product> => {
     const client = new Client(dbOptions);
     await client.connect();
+    let shouldRollbackProduct = false;
 
     try {
         const id = uuidv4();
@@ -69,6 +70,7 @@ export const insert = async (product: Product): Promise<Product> => {
         console.log(`Script for insert products: ${productsScript}`)
         await client.query(productsScript);
         product.id = id;
+        shouldRollbackProduct = true;
 
         const stocksScript = `insert into stocks (product_id, count) values ('${id}',${product.count})`;
         console.log(`Script for insert stocks: ${stocksScript}`);
@@ -77,6 +79,11 @@ export const insert = async (product: Product): Promise<Product> => {
         return product;
     } catch (error) {
         console.error('Error during database insert request executing:', error);
+        if(shouldRollbackProduct) {
+            // Business logic transaction
+            await client.query(`delete from products where id = '${product.id}'`);
+            console.log(`Product ${product.id} was rolled back from db`);
+        }
         throw  error;
     } finally {
         client.end();
