@@ -32,7 +32,7 @@ export const getAll = async (): Promise<Product[]> => {
         return products;
     } catch (error) {
         console.error('Error during database getAll request executing:', error);
-        return [];
+        throw  error;
     } finally {
         client.end();
     }
@@ -51,7 +51,7 @@ export const get = async (id): Promise<Product> => {
         return products[0];
     } catch (error) {
         console.error('Error during database get request executing:', error);
-        return null;
+        throw  error;
     } finally {
         client.end();
     }
@@ -77,7 +77,7 @@ export const insert = async (product: Product): Promise<Product> => {
         return product;
     } catch (error) {
         console.error('Error during database insert request executing:', error);
-        return null;
+        throw  error;
     } finally {
         client.end();
     }
