@@ -24,3 +24,8 @@ export const toNotFound = () => addHeaderCORS({
 export const toServerError = () => addHeaderCORS({
     statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
 });
+
+export const toValidationError = () => addHeaderCORS({
+    statusCode: StatusCodes.BAD_REQUEST,
+    body: 'Invalid request data',
+});
