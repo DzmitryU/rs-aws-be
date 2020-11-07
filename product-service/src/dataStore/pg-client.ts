@@ -19,13 +19,14 @@ const dbOptions = {
     connectionTimeoutMillis: 5000 // time in millisecond for termination of the database query
 };
 
+const productFields = 'id, title, description, price, count';
 
 export const getAll = async (): Promise<Product[]> => {
     const client = new Client(dbOptions);
     await client.connect();
 
     try {
-        const script = `select * from products, stocks where id = product_id`;
+        const script = `select ${productFields} from products, stocks where id = product_id`;
         console.log(`Script for getAll: ${script}`);
         const { rows: products } = await client.query(script);
 
@@ -43,7 +44,7 @@ export const get = async (id): Promise<Product> => {
     await client.connect();
 
     try {
-        const script = `select * from products, stocks where id = '${id}' and id = product_id`;
+        const script = `select ${productFields} from products, stocks where id = '${id}' and id = product_id`;
         console.log(`Script for get: ${script}`);
         const { rows: products } =
             await client.query(script);

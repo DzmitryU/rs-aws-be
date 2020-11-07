@@ -9,7 +9,7 @@ import {productSchema} from './schemas/product';
 export const createProduct: APIGatewayProxyHandler = async (event) => {
   try {
     console.log(`create-product - event.body: ${JSON.stringify(event.body)}`);
-    const product: Product = JSON.parse(JSON.stringify(event.body));
+    const product: Product = JSON.parse(event.body);
     const validationError = productSchema.validate(product).error;
     if (validationError) {
       console.warn(`Joi validation error: ${JSON.stringify(validationError)}`);
