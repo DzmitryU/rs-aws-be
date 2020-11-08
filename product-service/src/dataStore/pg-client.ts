@@ -1,5 +1,4 @@
 'use strict';
-import { v4 as uuidv4 } from 'uuid';
 import { Client } from 'pg';
 
 import {Product} from '../types/Product';
@@ -64,16 +63,16 @@ export const insert = async (product: Product): Promise<Product> => {
     let shouldRollbackProduct = false;
 
     try {
-        const id = uuidv4();
         const productsScript =
-            `insert into products (id, description, price, title) ` +
-            `values ('${id}','${product.description}',${product.price},'${product.title}')`;
+            `insert into products (description, price, title) ` +
+            `values ('${product.description}',${product.price},'${product.title}')` +
+            `returning id`;
         console.log(`Script for insert products: ${productsScript}`)
-        await client.query(productsScript);
-        product.id = id;
+        const { rows: products } = await client.query(productsScript);
+        product.id = products[0].id;
         shouldRollbackProduct = true;
 
-        const stocksScript = `insert into stocks (product_id, count) values ('${id}',${product.count})`;
+        const stocksScript = `insert into stocks (product_id, count) values ('${products[0].id}',${product.count})`;
         console.log(`Script for insert stocks: ${stocksScript}`);
         await client.query(stocksScript);
 

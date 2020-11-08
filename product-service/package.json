@@ -10,8 +10,7 @@
     "http-status-codes": "^2.1.4",
     "joi": "^17.3.0",
     "pg": "^8.4.2",
-    "source-map-support": "^0.5.10",
-    "uuid": "^8.3.1"
+    "source-map-support": "^0.5.10"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.17",

@@ -8,7 +8,7 @@ import {productSchema} from './schemas/product';
 
 export const createProduct: APIGatewayProxyHandler = async (event) => {
   try {
-    console.log(`create-product - event.body: ${JSON.stringify(event.body)}`);
+    console.log(`create-product - event.body: ${event.body}`);
     const product: Product = JSON.parse(event.body);
     const validationError = productSchema.validate(product).error;
     if (validationError) {
@@ -21,7 +21,7 @@ export const createProduct: APIGatewayProxyHandler = async (event) => {
 
     return toSuccess(product);
   } catch (error) {
-    console.warn(`createProduct - Unhandled server error: ${JSON.stringify(error)}`);
+    console.warn(`createProduct - Unhandled server error: ${error}`);
 
     return toServerError();
   }
