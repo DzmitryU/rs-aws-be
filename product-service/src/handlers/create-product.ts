@@ -12,7 +12,7 @@ export const createProduct: APIGatewayProxyHandler = async (event) => {
     const product: Product = JSON.parse(event.body);
     const validationError = productSchema.validate(product).error;
     if (validationError) {
-      console.warn(`Joi validation error: ${JSON.stringify(validationError)}`);
+      console.warn(`create-product - Joi validation error: ${JSON.stringify(validationError)}`);
       return toValidationError();
     }
 
