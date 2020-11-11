@@ -30,35 +30,58 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Product'
-  /products/{productId}:
-    get:
+        500:
+          description: Internal Server Error
+    post:
       tags:
         - products
-      summary: Find PS4 game by ID
-      description: Returns a single product
-      operationId: getProductsById
+      summary: Create new product
+      operationId: createProduct
+      consumes:
+        - application/json
       produces:
         - application/json
-        - application/xml
       parameters:
-        - name: productId
-          in: path
-          description: ID of game to return
+        - in: body
+          name: body
+          description: Product object that needs to be added to the store
           required: true
-          type: string
-      responses:
-        200:
-          description: successful operation
           schema:
-            $ref: '#/definitions/Product'
-        404:
-          description: Game not found
+            $ref: '#/definitions/NewProduct'
+      responses:
+        400:
+          description: 'Error: Bad request'
+        500:
+          description: Internal Server Error
 definitions:
   Product:
     type: object
+    required:
+      - id
+      - count
+      - description
+      - price
+      - title
     properties:
       id:
         type: string
+      count:
+        type: integer
+        format: int64
+      description:
+        type: string
+      price:
+        type: number
+      title:
+        type: string
+  NewProduct:
+    type: object
+    required:
+      - count
+      - description
+      - price
+      - title
+    properties:
       count:
         type: integer
         format: int64

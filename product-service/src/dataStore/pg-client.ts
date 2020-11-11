@@ -1,5 +1,4 @@
 'use strict';
-import { v4 as uuidv4 } from 'uuid';
 import { Client } from 'pg';
 
 import {Product} from '../types/Product';
@@ -19,13 +18,14 @@ const dbOptions = {
     connectionTimeoutMillis: 5000 // time in millisecond for termination of the database query
 };
 
+const productFields = 'id, title, description, price, count';
 
 export const getAll = async (): Promise<Product[]> => {
     const client = new Client(dbOptions);
     await client.connect();
 
     try {
-        const script = `select * from products, stocks where id = product_id`;
+        const script = `select ${productFields} from products, stocks where id = product_id`;
         console.log(`Script for getAll: ${script}`);
         const { rows: products } = await client.query(script);
 
@@ -43,7 +43,7 @@ export const get = async (id): Promise<Product> => {
     await client.connect();
 
     try {
-        const script = `select * from products, stocks where id = '${id}' and id = product_id`;
+        const script = `select ${productFields} from products, stocks where id = '${id}' and id = product_id`;
         console.log(`Script for get: ${script}`);
         const { rows: products } =
             await client.query(script);
@@ -60,30 +60,26 @@ export const get = async (id): Promise<Product> => {
 export const insert = async (product: Product): Promise<Product> => {
     const client = new Client(dbOptions);
     await client.connect();
-    let shouldRollbackProduct = false;
 
     try {
-        const id = uuidv4();
+        await client.query('BEGIN');
         const productsScript =
-            `insert into products (id, description, price, title) ` +
-            `values ('${id}','${product.description}',${product.price},'${product.title}')`;
+            `insert into products (description, price, title) ` +
+            `values ('${product.description}',${product.price},'${product.title}')` +
+            `returning id`;
         console.log(`Script for insert products: ${productsScript}`)
-        await client.query(productsScript);
-        product.id = id;
-        shouldRollbackProduct = true;
+        const { rows: products } = await client.query(productsScript);
+        product.id = products[0].id;
 
-        const stocksScript = `insert into stocks (product_id, count) values ('${id}',${product.count})`;
+        const stocksScript = `insert into stocks (product_id, count) values ('${products[0].id}',${product.count})`;
         console.log(`Script for insert stocks: ${stocksScript}`);
         await client.query(stocksScript);
 
+        await client.query('COMMIT');
         return product;
     } catch (error) {
         console.error('Error during database insert request executing:', error);
-        if(shouldRollbackProduct) {
-            // Business logic transaction
-            await client.query(`delete from products where id = '${product.id}'`);
-            console.log(`Product ${product.id} was rolled back from db`);
-        }
+        await client.query('ROLLBACK')
         throw  error;
     } finally {
         client.end();

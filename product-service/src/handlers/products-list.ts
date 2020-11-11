@@ -11,7 +11,7 @@ export const getProductsList: APIGatewayProxyHandler = async () => {
 
     return toSuccess(products);
   } catch (error) {
-    console.warn(`products-list - Unhandled server error: ${JSON.stringify(error)}`);
+    console.warn(`products-list - Unhandled server error: ${error}`);
 
     return toServerError();
   }
