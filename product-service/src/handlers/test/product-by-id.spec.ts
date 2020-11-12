@@ -1,11 +1,11 @@
-import {describe} from "@jest/globals";
+import {describe} from '@jest/globals';
 import {StatusCodes} from 'http-status-codes';
 import { mockEventCreator } from 'aws-lambda-test-utils';
 
 import {products} from '../../dataStore/db'
 
 import { getProductsById } from '../product-by-id';
-import {APIGatewayProxyResult} from "aws-lambda/trigger/api-gateway-proxy";
+import {APIGatewayProxyResult} from 'aws-lambda/trigger/api-gateway-proxy';
 
 describe('[getProductsById]', () => {
    test('should return product by id', async () => {
