@@ -28,12 +28,13 @@ const serverlessConfiguration: Serverless = {
   },
   functions: {
     importProductsFile: {
-      handler: 'handler.importProductsFile',
+      handler: 'src/handlers/import-products-file.importProductsFile',
       events: [
         {
           http: {
             method: 'get',
-            path: 'import',
+            path: 'import/{name}',
+            cors: true
           }
         }
       ]
