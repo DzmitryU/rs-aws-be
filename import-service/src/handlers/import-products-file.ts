@@ -1,12 +1,11 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
-
 import AWS from 'aws-sdk';
+
 import {toSuccess} from "../utils/response";
-const s3 = new AWS.S3({ region: 'eu-west-1' });
+import {AWS_REGION, BUCKET} from "../constants";
 
-const BUCKET = 'rs-aws-be';
-
+const s3 = new AWS.S3({ region: AWS_REGION });
 
 export const importProductsFile: APIGatewayProxyHandler = async (event, _context) => {
   const { name } = event.queryStringParameters;
