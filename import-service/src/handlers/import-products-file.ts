@@ -1,15 +1,15 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import { StatusCodes } from 'http-status-codes';
 import 'source-map-support/register';
 
 import AWS from 'aws-sdk';
+import {toSuccess} from "../utils/response";
 const s3 = new AWS.S3({ region: 'eu-west-1' });
 
 const BUCKET = 'rs-aws-be';
 
 
 export const importProductsFile: APIGatewayProxyHandler = async (event, _context) => {
-  const { name } = event.pathParameters;
+  const { name } = event.queryStringParameters;
   console.log(`importProductsFile - name: ${name}`);
 
   const catalogPath = `uploaded/${name}`;
@@ -23,8 +23,5 @@ export const importProductsFile: APIGatewayProxyHandler = async (event, _context
   const url = await s3.getSignedUrl('putObject', params);
   console.log(`importProductsFile - signedUrl: ${url}`);
 
-  return {
-    statusCode: StatusCodes.OK,
-    body: url,
-  };
+  return toSuccess(url);
 };

@@ -24,7 +24,16 @@ const serverlessConfiguration: Serverless = {
     },
     stage: 'dev',
     profile: 'personalAccount',
-    region: 'eu-west-1'
+    region: 'eu-west-1',
+    iamRoleStatements: [{
+      Effect: 'Allow',
+      Action: 's3:ListBucket',
+      Resource: ['arn:aws:s3:::rs-aws-be']
+    }, {
+      Effect: 'Allow',
+      Action: ['s3:*'],
+      Resource: ['arn:aws:s3:::rs-aws-be/*']
+    }]
   },
   functions: {
     importProductsFile: {
@@ -33,7 +42,7 @@ const serverlessConfiguration: Serverless = {
         {
           http: {
             method: 'get',
-            path: 'import/{name}',
+            path: 'import',
             cors: true
           }
         }
