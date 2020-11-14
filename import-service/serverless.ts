@@ -1,4 +1,5 @@
 import type { Serverless } from 'serverless/aws';
+import {SOURCE_FOLDER} from "./src/constants";
 
 const serverlessConfiguration: Serverless = {
   service: {
@@ -56,7 +57,7 @@ const serverlessConfiguration: Serverless = {
             bucket: 'rs-aws-be',
             event: 's3:ObjectCreated:*',
             rules: [{
-              prefix: 'uploaded/',
+              prefix: `${SOURCE_FOLDER}/`,
               suffix: '.csv'
             }],
             existing: true
