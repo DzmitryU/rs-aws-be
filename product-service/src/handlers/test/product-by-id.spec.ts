@@ -1,4 +1,3 @@
-import {describe} from '@jest/globals';
 import {StatusCodes} from 'http-status-codes';
 import { mockEventCreator } from 'aws-lambda-test-utils';
 

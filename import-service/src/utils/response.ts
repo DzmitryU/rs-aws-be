@@ -14,7 +14,7 @@ const addHeaderCORS = (response) => {
 
 export const toSuccess = (data) => addHeaderCORS({
     statusCode: StatusCodes.OK,
-    body: JSON.stringify(data, null, 2),
+    body: data,
 });
 
 export const toAccepted = () => addHeaderCORS({

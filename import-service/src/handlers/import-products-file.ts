@@ -1,13 +1,12 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
-import AWS from 'aws-sdk';
+import * as AWS from 'aws-sdk';
 
-import {toSuccess} from "../utils/response";
-import {AWS_REGION, BUCKET, SOURCE_FOLDER} from "../constants";
-
-const s3 = new AWS.S3({ region: AWS_REGION });
+import {toSuccess} from '../utils/response';
+import {AWS_REGION, BUCKET, SOURCE_FOLDER} from '../constants';
 
 export const importProductsFile: APIGatewayProxyHandler = async (event, _context) => {
+  const s3 = new AWS.S3({ region: AWS_REGION });
   const { name } = event.queryStringParameters;
   console.log(`importProductsFile - name: ${name}`);
 
@@ -19,7 +18,7 @@ export const importProductsFile: APIGatewayProxyHandler = async (event, _context
     ContentType: 'text/csv'
   }
 
-  const url = await s3.getSignedUrl('putObject', params);
+  const url = await s3.getSignedUrlPromise('putObject', params);
   console.log(`importProductsFile - signedUrl: ${url}`);
 
   return toSuccess(url);
