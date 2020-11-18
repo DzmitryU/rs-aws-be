@@ -2,7 +2,7 @@ import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 
 import {create} from '../dataStore'
-import {toServerError, toSuccess, toValidationError} from '../utils/response';
+import {toServerError, toSuccess, toValidationError} from '../../../common/src/utils/response';
 import {Product} from '../types/Product';
 import {productSchema} from './schemas/product';
 

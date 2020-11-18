@@ -6,7 +6,7 @@ import util from 'util';
 import stream from 'stream';
 
 import {AWS_REGION, BUCKET, SOURCE_FOLDER, TARGET_FOLDER} from '../constants';
-import {toAccepted} from '../utils/response';
+import {toAccept} from '../../../common/src/utils/response';
 
 const s3 = new AWS.S3({ region: AWS_REGION });
 const pipeline = util.promisify(stream.pipeline);
@@ -38,7 +38,7 @@ export const importFileParser: S3Handler = async (event: S3Event) => {
     console.log(`Moved into ${BUCKET}/${targetKey}`);
   }
 
-  return toAccepted();
+  return toAccept();
 };
 
 class LogRow extends stream.Transform {

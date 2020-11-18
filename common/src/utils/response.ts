@@ -14,7 +14,7 @@ const addHeaderCORS = (response) => {
 
 export const toSuccess = (data) => addHeaderCORS({
     statusCode: StatusCodes.OK,
-    body: JSON.stringify(data, null, 2),
+    body: typeof data === 'string' ? data : JSON.stringify(data),
 });
 
 export const toNotFound = () => addHeaderCORS({
@@ -28,4 +28,8 @@ export const toServerError = () => addHeaderCORS({
 export const toValidationError = () => addHeaderCORS({
     statusCode: StatusCodes.BAD_REQUEST,
     body: 'Invalid request data',
+});
+
+export const toAccept = () => addHeaderCORS({
+    statusCode: StatusCodes.ACCEPTED,
 });
