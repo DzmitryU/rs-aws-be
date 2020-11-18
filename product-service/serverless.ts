@@ -21,6 +21,9 @@ const serverlessConfiguration: Serverless = {
         },
         environment: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+            SQS_URL: {
+                Ref: 'SQSQueue'
+            }
         },
         stage: 'dev',
         profile: 'personalAccount',
@@ -62,6 +65,31 @@ const serverlessConfiguration: Serverless = {
                     }
                 }
             ]
+        },
+        catalogBatchProcess: {
+            handler: 'src/handlers/catalog-batch-process.catalogBatchProcess',
+            events: [
+                {
+                    sqs: {
+                        batchSize: 5,
+                        arn: {
+                            'Fn::GetAtt': [
+                                'SQSQueue', 'Arn'
+                            ]
+                        }
+                    }
+                }
+            ],
+        }
+    },
+    resources: {
+        Resources: {
+            SQSQueue: {
+                Type: 'AWS::SQS::Queue',
+                Properties: {
+                    QueueName: 'rs-aws-sqs-queue'
+                }
+            }
         }
     }
 }
