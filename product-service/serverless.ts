@@ -71,7 +71,7 @@ const serverlessConfiguration: Serverless = {
             events: [
                 {
                     sqs: {
-                        batchSize: 5,
+                        batchSize: 2,
                         arn: {
                             'Fn::GetAtt': [
                                 'SQSQueue', 'Arn'
@@ -87,7 +87,19 @@ const serverlessConfiguration: Serverless = {
             SQSQueue: {
                 Type: 'AWS::SQS::Queue',
                 Properties: {
-                    QueueName: 'rs-aws-sqs-queue'
+                    QueueName: 'CatalogItemsQueue'
+                }
+            }
+        },
+        Outputs: {
+            SQSQueueUrl: {
+                Value: {
+                    Ref: 'SQSQueue'
+                }
+            },
+            SQSQueueArn: {
+                Value: {
+                    'Fn::GetAtt': [ 'SQSQueue', 'Arn' ]
                 }
             }
         }

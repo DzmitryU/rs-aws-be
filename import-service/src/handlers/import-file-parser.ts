@@ -9,7 +9,10 @@ import {AWS_REGION, BUCKET, SOURCE_FOLDER, TARGET_FOLDER} from '../constants';
 import {toAccept} from '../../../common/src/utils/response';
 
 const s3 = new AWS.S3({ region: AWS_REGION });
+const sqs = new AWS.SQS();
 const pipeline = util.promisify(stream.pipeline);
+
+const QueueUrl = process.env.CATALOG_ITEMS_QUEUE_URL;
 
 export const importFileParser: S3Handler = async (event: S3Event) => {
   console.log(event.Records);
@@ -46,8 +49,20 @@ class LogRow extends stream.Transform {
     super({ objectMode: true });
   }
 
-  _transform(row, _enc, callback) {
-    console.log(row);
+  async _transform(row, _enc, callback) {
+    try {
+      delete row.id;
+      await sqs.sendMessage({
+        QueueUrl,
+        MessageBody: row,
+      }, (error) => {
+        console.warn(`Error in sendMessage callback: ${JSON.stringify(error)}`);
+      });
+    } catch (err) {
+      console.warn(`Error during sending ${JSON.stringify(row)} to ${QueueUrl}`)
+      callback(err);
+    }
+    console.log(`${JSON.stringify(row)} was successfully sent to ${QueueUrl}`);
     callback(null, row);
   }
 }
