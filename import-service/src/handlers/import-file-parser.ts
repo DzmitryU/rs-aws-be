@@ -54,10 +54,8 @@ class LogRow extends stream.Transform {
       delete row.id;
       await sqs.sendMessage({
         QueueUrl,
-        MessageBody: row,
-      }, (error) => {
-        console.warn(`Error in sendMessage callback: ${JSON.stringify(error)}`);
-      });
+        MessageBody: JSON.stringify(row),
+      }).promise();
     } catch (err) {
       console.warn(`Error during sending ${JSON.stringify(row)} to ${QueueUrl}`)
       callback(err);

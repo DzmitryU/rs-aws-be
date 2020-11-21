@@ -25,6 +25,19 @@ const serverlessConfiguration: Serverless = {
                 Ref: 'SQSQueue'
             }
         },
+        iamRoleStatements: [
+            {
+                Effect: 'Allow',
+                Action: [
+                    'sqs:ReceiveMessage'
+                ],
+                Resource: [
+                    {
+                        'Fn::GetAtt': [ 'SQSQueue', 'Arn' ]
+                    }
+                ]
+            }
+        ],
         stage: 'dev',
         profile: 'personalAccount',
         region: 'eu-west-1'
@@ -71,7 +84,7 @@ const serverlessConfiguration: Serverless = {
             events: [
                 {
                     sqs: {
-                        batchSize: 2,
+                        batchSize: 5,
                         arn: {
                             'Fn::GetAtt': [
                                 'SQSQueue', 'Arn'
