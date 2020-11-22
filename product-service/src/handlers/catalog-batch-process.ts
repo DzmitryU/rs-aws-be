@@ -1,12 +1,12 @@
-import { SQSHandler } from 'aws-lambda';
+import {SQSEvent, SQSHandler} from 'aws-lambda';
 import 'source-map-support/register';
 
 import {toAccept, toServerError, toValidationError} from '../../../common/src/utils/response';
 import {Product} from '../types/Product';
-import {createProduct} from "../service/products";
-import {send} from "../service/email";
+import {createProduct} from '../service/products';
+import {send} from '../service/email';
 
-export const catalogBatchProcess: SQSHandler = async (event) => {
+export const catalogBatchProcess: SQSHandler = async (event: SQSEvent) => {
     console.log(`catalog-batch-process - event.Records: ${JSON.stringify(event.Records)}`);
   try {
       const ids = [];
