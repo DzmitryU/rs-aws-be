@@ -1,5 +1,7 @@
 import type {Serverless} from 'serverless/aws';
 
+const batchSize = 5;
+
 const serverlessConfiguration: Serverless = {
     service: {
         name: 'product-service',
@@ -21,9 +23,6 @@ const serverlessConfiguration: Serverless = {
         },
         environment: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
-            SNS_ARN: {
-                Ref: 'SNSSubscription'
-            },
             TOPIC_ARN: {
                 Ref: 'SNSTopic'
             }
@@ -50,7 +49,7 @@ const serverlessConfiguration: Serverless = {
         ],
         stage: 'dev',
         profile: 'personalAccount',
-        region: 'eu-west-1'
+        region: '${env:REGION}'
     },
     functions: {
         getProductsList: {
@@ -94,7 +93,7 @@ const serverlessConfiguration: Serverless = {
             events: [
                 {
                     sqs: {
-                        batchSize: 5,
+                        batchSize,
                         arn: {
                             'Fn::GetAtt': [
                                 'SQSQueue', 'Arn'
@@ -122,12 +121,28 @@ const serverlessConfiguration: Serverless = {
             SNSSubscription: {
                 Type: 'AWS::SNS::Subscription',
                 Properties: {
-                    Endpoint: 'ivan.divan.test@gmail.com',
+                    Endpoint: '${env:MAIN_EMAIL}',
                     Protocol: 'email',
                     TopicArn: {
                         Ref: 'SNSTopic'
+                    },
+                    FilterPolicy: {
+                        ProductsNumber: [{ numeric: ['<', batchSize] }]
                     }
-                }
+                },
+            },
+            AdditionalSNSSubscription: {
+                Type: 'AWS::SNS::Subscription',
+                Properties: {
+                    Endpoint: '${env:ADDITIONAL_EMAIL}',
+                    Protocol: 'email',
+                    TopicArn: {
+                        Ref: 'SNSTopic'
+                    },
+                    FilterPolicy: {
+                        ProductsNumber: [{ numeric: ['>=', batchSize] }]
+                    }
+                },
             },
         },
         Outputs: {
