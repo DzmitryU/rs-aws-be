@@ -127,7 +127,7 @@ const serverlessConfiguration: Serverless = {
                         Ref: 'SNSTopic'
                     },
                     FilterPolicy: {
-                        ProductsNumber: [{ numeric: ['<', batchSize] }]
+                        ProductsNumber: [{ numeric: ['>', 1] }]
                     }
                 },
             },
@@ -140,7 +140,7 @@ const serverlessConfiguration: Serverless = {
                         Ref: 'SNSTopic'
                     },
                     FilterPolicy: {
-                        ProductsNumber: [{ numeric: ['>=', batchSize] }]
+                        ProductsNumber: [{ numeric: ['=', 1] }]
                     }
                 },
             },
