@@ -21,8 +21,11 @@ const serverlessConfiguration: Serverless = {
         },
         environment: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
-            SQS_URL: {
-                Ref: 'SQSQueue'
+            SNS_ARN: {
+                Ref: 'SNSSubscription'
+            },
+            TOPIC_ARN: {
+                Ref: 'SNSTopic'
             }
         },
         iamRoleStatements: [
@@ -36,6 +39,13 @@ const serverlessConfiguration: Serverless = {
                         'Fn::GetAtt': [ 'SQSQueue', 'Arn' ]
                     }
                 ]
+            },
+            {
+                Effect: 'Allow',
+                Action: 'sns:*',
+                Resource: {
+                    Ref: 'SNSTopic'
+                }
             }
         ],
         stage: 'dev',
@@ -102,7 +112,23 @@ const serverlessConfiguration: Serverless = {
                 Properties: {
                     QueueName: 'CatalogItemsQueue'
                 }
-            }
+            },
+            SNSTopic: {
+                Type: 'AWS::SNS::Topic',
+                Properties: {
+                    TopicName: 'createProductTopic',
+                }
+            },
+            SNSSubscription: {
+                Type: 'AWS::SNS::Subscription',
+                Properties: {
+                    Endpoint: 'ivan.divan.test@gmail.com',
+                    Protocol: 'email',
+                    TopicArn: {
+                        Ref: 'SNSTopic'
+                    }
+                }
+            },
         },
         Outputs: {
             SQSQueueUrl: {

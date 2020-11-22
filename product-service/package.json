@@ -7,6 +7,7 @@
     "test": "npx jest --config jest.config.json"
   },
   "dependencies": {
+    "aws-sdk": "^2.797.0",
     "http-status-codes": "^2.1.4",
     "joi": "^17.3.0",
     "pg": "^8.4.2",
