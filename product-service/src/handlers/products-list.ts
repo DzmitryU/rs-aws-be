@@ -2,7 +2,7 @@ import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 
 import {getAll} from '../dataStore'
-import {toServerError, toSuccess} from '../utils/response';
+import {toServerError, toSuccess} from '../../../common/src/utils/response';
 
 export const getProductsList: APIGatewayProxyHandler = async () => {
   console.log('Querying for all products');

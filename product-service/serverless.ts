@@ -1,5 +1,7 @@
 import type {Serverless} from 'serverless/aws';
 
+const batchSize = 5;
+
 const serverlessConfiguration: Serverless = {
     service: {
         name: 'product-service',
@@ -21,10 +23,33 @@ const serverlessConfiguration: Serverless = {
         },
         environment: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+            TOPIC_ARN: {
+                Ref: 'SNSTopic'
+            }
         },
+        iamRoleStatements: [
+            {
+                Effect: 'Allow',
+                Action: [
+                    'sqs:ReceiveMessage'
+                ],
+                Resource: [
+                    {
+                        'Fn::GetAtt': [ 'SQSQueue', 'Arn' ]
+                    }
+                ]
+            },
+            {
+                Effect: 'Allow',
+                Action: 'sns:*',
+                Resource: {
+                    Ref: 'SNSTopic'
+                }
+            }
+        ],
         stage: 'dev',
         profile: 'personalAccount',
-        region: 'eu-west-1'
+        region: '${env:REGION}'
     },
     functions: {
         getProductsList: {
@@ -62,6 +87,75 @@ const serverlessConfiguration: Serverless = {
                     }
                 }
             ]
+        },
+        catalogBatchProcess: {
+            handler: 'src/handlers/catalog-batch-process.catalogBatchProcess',
+            events: [
+                {
+                    sqs: {
+                        batchSize,
+                        arn: {
+                            'Fn::GetAtt': [
+                                'SQSQueue', 'Arn'
+                            ]
+                        }
+                    }
+                }
+            ],
+        }
+    },
+    resources: {
+        Resources: {
+            SQSQueue: {
+                Type: 'AWS::SQS::Queue',
+                Properties: {
+                    QueueName: 'CatalogItemsQueue'
+                }
+            },
+            SNSTopic: {
+                Type: 'AWS::SNS::Topic',
+                Properties: {
+                    TopicName: 'createProductTopic',
+                }
+            },
+            SNSSubscription: {
+                Type: 'AWS::SNS::Subscription',
+                Properties: {
+                    Endpoint: '${env:MAIN_EMAIL}',
+                    Protocol: 'email',
+                    TopicArn: {
+                        Ref: 'SNSTopic'
+                    },
+                    FilterPolicy: {
+                        ProductsNumber: [{ numeric: ['>', 1] }]
+                    }
+                },
+            },
+            AdditionalSNSSubscription: {
+                Type: 'AWS::SNS::Subscription',
+                Properties: {
+                    Endpoint: '${env:ADDITIONAL_EMAIL}',
+                    Protocol: 'email',
+                    TopicArn: {
+                        Ref: 'SNSTopic'
+                    },
+                    FilterPolicy: {
+                        ProductsNumber: [{ numeric: ['=', 1] }]
+                    }
+                },
+            },
+        },
+        Outputs: {
+            SQSQueueUrl: {
+                Value: {
+                    Ref: 'SQSQueue'
+                }
+            },
+            SQSQueueArn: {
+                Value: {
+                    'Fn::GetAtt': [ 'SQSQueue', 'Arn' ]
+                }
+            }
         }
     }
 }

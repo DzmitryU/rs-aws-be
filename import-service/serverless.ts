@@ -22,6 +22,7 @@ const serverlessConfiguration: Serverless = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      CATALOG_ITEMS_QUEUE_URL: '${cf:product-service-${self:provider.stage}.SQSQueueUrl}',
     },
     stage: 'dev',
     profile: 'personalAccount',
@@ -34,6 +35,10 @@ const serverlessConfiguration: Serverless = {
       Effect: 'Allow',
       Action: ['s3:*'],
       Resource: ['arn:aws:s3:::rs-aws-be/*']
+    }, {
+      Effect: 'Allow',
+      Action: 'sqs:*',
+      Resource: ['${cf:product-service-${self:provider.stage}.SQSQueueArn}']
     }]
   },
   functions: {
@@ -65,7 +70,7 @@ const serverlessConfiguration: Serverless = {
         }
       ]
     }
-  }
+  },
 }
 
 module.exports = serverlessConfiguration;

@@ -2,7 +2,7 @@ import { APIGatewayProxyHandler } from 'aws-lambda';
 import 'source-map-support/register';
 import * as AWS from 'aws-sdk';
 
-import {toSuccess} from '../utils/response';
+import {toSuccess} from '../../../common/src/utils/response';
 import {AWS_REGION, BUCKET, SOURCE_FOLDER} from '../constants';
 
 export const importProductsFile: APIGatewayProxyHandler = async (event, _context) => {
