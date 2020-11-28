@@ -33,11 +33,3 @@ export const toValidationError = () => addHeaderCORS({
 export const toAccept = () => addHeaderCORS({
     statusCode: StatusCodes.ACCEPTED,
 });
-
-export const toAccessDenied = () => addHeaderCORS({
-    statusCode: StatusCodes.FORBIDDEN,
-});
-
-export const toUnauthorized = () => addHeaderCORS({
-    statusCode: StatusCodes.UNAUTHORIZED,
-});

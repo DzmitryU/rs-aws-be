@@ -1,12 +1,14 @@
 import {APIGatewayTokenAuthorizerHandler} from 'aws-lambda';
-import {toAccessDenied, toServerError, toSuccess, toUnauthorized} from '../../../common/src/utils/response';
+import {EFFECT, UNAUTHORIZED} from '../constants';
 
-export const basicAuthorizer: APIGatewayTokenAuthorizerHandler = async (event) => {
+export const basicAuthorizer: APIGatewayTokenAuthorizerHandler = (
+    event, _context, callback,
+) => {
     try {
         const authorizationToken = event.authorizationToken;
 
         if (!authorizationToken) {
-            return toUnauthorized();
+            return callback(UNAUTHORIZED);
         }
 
         const encodedCreds = authorizationToken.split(' ')[1];
@@ -16,14 +18,27 @@ export const basicAuthorizer: APIGatewayTokenAuthorizerHandler = async (event) =
         console.log(`username: ${username} and password: ${password}`);
 
         const storedUserPassword = process.env[username];
-        if (!storedUserPassword || storedUserPassword !== password) {
-            return toAccessDenied();
-        }
+        const isAuthorized: boolean = storedUserPassword && storedUserPassword === password;
+        const effect: EFFECT = isAuthorized ? EFFECT.ALLOW : EFFECT.DENY;
 
-        return toSuccess('OK');
+        return callback(null, getPolicy(username, effect, event.methodArn));
     } catch (err) {
         console.error(`Error in basicAuthorizer: ${JSON.stringify(err)}`);
 
-        return toServerError();
+        return callback(UNAUTHORIZED);
     }
+}
+
+const getPolicy = (principalId: string, effect: EFFECT, resource: string) => {
+    return {
+        principalId,
+        policyDocument: {
+            Version: '2012-10-17',
+            Statement: [{
+                Action: 'execute-api:Invoke',
+                Effect: effect,
+                Resource: resource
+            }]
+        }
+    };
 }
