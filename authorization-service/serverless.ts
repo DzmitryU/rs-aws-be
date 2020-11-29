@@ -32,21 +32,6 @@ const serverlessConfiguration: Serverless = {
   functions: {
     basicAuthorizer: {
       handler: 'src/handlers/basic-authorizer.basicAuthorizer',
-      events: [
-        {
-          http: {
-            method: 'get',
-            path: 'token',
-            cors: true,
-            authorizer: {
-              name: 'basicAuthorizer',
-              resultTtlInSeconds: 0,
-              identitySource: 'method.request.header.Authorization',
-              type: 'token',
-            }
-          }
-        }
-      ]
     }
   }
 }
