@@ -27,12 +27,23 @@ const serverlessConfiguration: Serverless = {
     },
     stage: 'dev',
     profile: 'personalAccount',
-    region: 'eu-west-1',
+    region: '${env:REGION}',
   },
   functions: {
     basicAuthorizer: {
       handler: 'src/handlers/basic-authorizer.basicAuthorizer',
     }
+  },
+  resources: {
+    Resources: {
+    },
+    Outputs: {
+      basicAuthorizerArn: {
+        Value: {
+          'Fn::GetAtt': ['BasicAuthorizerLambdaFunction', 'Arn'],
+        }
+      },
+    },
   }
 }
 

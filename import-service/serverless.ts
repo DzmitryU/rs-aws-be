@@ -55,7 +55,7 @@ const serverlessConfiguration: Serverless = {
               resultTtlInSeconds: 0,
               identitySource: 'method.request.header.Authorization',
               type: 'token',
-              arn: 'arn:aws:lambda:eu-west-1:142200496662:function:authorization-service-dev-basicAuthorizer',
+              arn: '${cf:authorization-service-${self:provider.stage}.basicAuthorizerArn}',
             }
           }
         }
@@ -78,6 +78,63 @@ const serverlessConfiguration: Serverless = {
       ]
     }
   },
+  resources: {
+    Resources: {
+      GatewayResponseUnauthorized: {
+        Type: 'AWS::ApiGateway::GatewayResponse',
+        Properties: {
+          ResponseParameters: {
+            'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
+            'gatewayresponse.header.Access-Control-Allow-Headers': "'*'",
+          },
+          ResponseType: 'UNAUTHORIZED',
+          RestApiId: {
+            Ref: 'ApiGatewayRestApi',
+          },
+        },
+      },
+      GatewayResponseAccessDenied: {
+        Type: 'AWS::ApiGateway::GatewayResponse',
+        Properties: {
+          ResponseParameters: {
+            'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
+            'gatewayresponse.header.Access-Control-Allow-Headers': "'*'",
+          },
+          ResponseType: 'ACCESS_DENIED',
+          RestApiId: {
+            Ref: 'ApiGatewayRestApi',
+          },
+        },
+      },
+      GatewayResponseDefault400: {
+        Type: 'AWS::ApiGateway::GatewayResponse',
+        Properties: {
+          ResponseParameters: {
+            'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
+            'gatewayresponse.header.Access-Control-Allow-Headers': "'*'",
+          },
+          ResponseType: 'DEFAULT_4XX',
+          RestApiId: {
+            Ref: 'ApiGatewayRestApi',
+          },
+        },
+      },
+      GatewayResponseDefault500: {
+        Type: 'AWS::ApiGateway::GatewayResponse',
+        Properties: {
+          ResponseParameters: {
+            'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
+            'gatewayresponse.header.Access-Control-Allow-Headers': "'*'",
+          },
+          ResponseType: 'DEFAULT_5XX',
+          RestApiId: {
+            Ref: 'ApiGatewayRestApi',
+          },
+        },
+      },
+
+    }
+  }
 }
 
 module.exports = serverlessConfiguration;
