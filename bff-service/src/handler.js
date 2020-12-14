@@ -13,7 +13,7 @@ const handler = async (req, res) => {
     console.log('recipientURL', recipientURL);
 
     if (!recipientURL) {
-        return res.status(StatusCodes.BAD_GATEWAY).json({ error: 'Cannot process request' });
+        return res.status(StatusCodes.NOT_FOUND).json({ error: 'Cannot process request' });
     }
 
     const config = {
